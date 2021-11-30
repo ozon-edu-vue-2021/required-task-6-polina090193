@@ -1,6 +1,6 @@
 <script lang="jsx">
 export default {
-  name: 'oz-table-paginator',
+  name: 'my-table-paginator',
   props: {
     totalPages: {
       type: Number,
