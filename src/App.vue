@@ -33,7 +33,7 @@
         </template>
       </my-table-column>
     </my-table>
-    <MyTablePaginator v-if="paging === 'static'" totalPages="totalPages" currentPage="currentPage" @getPage="getPage" />
+    <MyTablePaginator v-if="paging === 'static'" :totalPages="totalPages" :currentPage="currentPage" @getPage="getPage" />
   </div>
 </template>
 

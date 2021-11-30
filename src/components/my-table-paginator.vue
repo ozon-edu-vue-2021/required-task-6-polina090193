@@ -71,11 +71,11 @@ export default {
 <style module>
   .pagination {
     height: 48px;
-    width: 100%;
+    width: 80%;
     border-bottom: 1px solid #c8cacc;
     display: flex;
     align-items: center;
-    margin-left: 8px;
+    margin: auto;
   }
 
   .control {

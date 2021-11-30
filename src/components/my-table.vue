@@ -1,7 +1,7 @@
 <script>
 import FilterDropdown from "./filter-dropdown";
 import { orderBy } from "lodash/collection";
-import DotsLoaderIcon from './dots-loader.svg';
+import DotsLoaderIcon from "./dots-loader.svg";
 
 export default {
   name: "my-table",
@@ -12,16 +12,16 @@ export default {
     },
     totalPages: {
       type: Number,
-      default: 0
+      default: 0,
     },
     currentPage: {
       type: Number,
-      default: 0
+      default: 0,
     },
     staticPaging: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
@@ -43,7 +43,10 @@ export default {
 
       if (this.filterText) {
         res = res.filter(
-          (row) => row[this.filterProp].toLowerCase().search(this.filterText.toLowerCase()) > -1
+          (row) =>
+            row[this.filterProp]
+              .toLowerCase()
+              .search(this.filterText.toLowerCase()) > -1
         );
       }
 
@@ -74,23 +77,21 @@ export default {
     renderInfPager() {
       const directives = [
         {
-          name: 'detect-viewport',
+          name: "detect-viewport",
           value: {
-            callback: this.$listeners.getPage
-          }
-        }
+            callback: this.$listeners.getPage,
+          },
+        },
       ];
 
       const style = {
-        background: `url("${DotsLoaderIcon}") no-repeat center`
+        background: `url("${DotsLoaderIcon}") no-repeat center`,
       };
 
-      return (
-        <div {...{ class: this.$style.infPager, style, directives }} />
-      );
-    }
+      return <div {...{ class: this.$style.infPager, style, directives }} />;
+    },
   },
-  
+
   render(h) {
     const {
       sortProp,
@@ -124,25 +125,28 @@ export default {
       }
 
       return h("th", { class: "my-table__thead-th", key: column.prop }, [
-        h("span", {}, renderedTitle),
-        h("font-awesome-icon", {
-          props: {
-            icon: sortIcon,
-          },
-          on: { click: () => this.toggleSort(column.prop) },
-        }),
-        h(FilterDropdown, {
-          props: {
-            columnProp: column.prop,
-            filterText: filterText,
-          },
-          on: {
-            openFilterTooltip: () => {
-              this.openFilterTooltip(column.prop);
+        h("div", { class: "my-table__thead-wrap" }, [
+          h("span", { class: "my-table__thead-name" }, renderedTitle),
+          h("font-awesome-icon", {
+            class: "my-table__thead-icon",
+            props: {
+              icon: sortIcon,
             },
-            setFilterText: setFilterText,
-          },
-        }),
+            on: { click: () => this.toggleSort(column.prop) },
+          }),
+          h(FilterDropdown, {
+            props: {
+              columnProp: column.prop,
+              filterText: filterText,
+            },
+            on: {
+              openFilterTooltip: () => {
+                this.openFilterTooltip(column.prop);
+              },
+              setFilterText: setFilterText,
+            },
+          }),
+        ]),
       ]);
     });
 
@@ -165,17 +169,27 @@ export default {
   margin: auto;
 }
 .my-table__thead-th {
-  width: 30%;
+  width: 20%;
   background-color: lightgrey;
 }
 .my-table__thead-th:first-child,
 .my-table__thead-th:nth-child(2) {
-  width: 5%;
+  width: 10%;
 }
 
 .my-table__thead-th,
 .my-table__tbody-td {
-  padding: 10px 20px;
+  padding: 5px 10px;
   text-align: left;
+}
+.my-table__thead-wrap {
+  display: flex;
+}
+.my-table__thead-icon {
+  white-space: nowrap;
+  margin-left: auto;
+}
+.filter-dropdown_filterIcon_1emoy {
+  margin-left: 10px;
 }
 </style>
