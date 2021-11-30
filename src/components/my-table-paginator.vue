@@ -42,14 +42,22 @@ export default {
       ];
     }
   },
+  /* methods: {
+    checkFirstPage(){
+        if (this.currentPage === 1) {
+           return <div> Welcome, { this.user.name }</div>;
+        }
+      }
+  }, */
   render() {
     const { $style, shownPagesNumbers, currentPage, totalPages, $listeners } = this;
     const { getPage } = $listeners;
 
     return (
       <div class={$style.pagination}>
-        <span class={$style.control} on={{ click: () => getPage(1) }}>{'<<'}</span>
-        <span class={$style.control} on={{ click: () => getPage(currentPage - 1) }}>{'<'}</span>
+        
+        <span class={[$style.control, { [$style.disabled]: currentPage === 1 }]} on={{ click: () => getPage(1) }}>{'<<'}</span>
+        <span class={[$style.control, { [$style.disabled]: currentPage === 1 }]} on={{ click: () => getPage(currentPage - 1) }}>{'<'}</span>
         {...shownPagesNumbers.map(
           number => (
             <span
@@ -60,8 +68,9 @@ export default {
             </span>
           )
         )}
-        <span class={$style.control} on={{ click: () => getPage(currentPage + 1) }}>{'>'}</span>
-        <span class={$style.control} on={{ click: () => getPage(totalPages) }}>{'>>'}</span>
+        
+        <span class={[$style.control, { [$style.disabled]: currentPage === totalPages }]} on={{ click: () => getPage(currentPage + 1) }}>{'>'}</span>
+        <span class={[$style.control, { [$style.disabled]: currentPage === totalPages }]} on={{ click: () => getPage(totalPages) }}>{'>>'}</span>
       </div>
     );
   }
@@ -69,33 +78,41 @@ export default {
 </script>
 
 <style module>
-  .pagination {
-    height: 48px;
-    width: 80%;
-    border-bottom: 1px solid #c8cacc;
-    display: flex;
-    align-items: center;
-    margin: auto;
-  }
+.pagination {
+  height: 48px;
+  width: 80%;
+  border-bottom: 1px solid #c8cacc;
+  display: flex;
+  align-items: center;
+  margin: auto;
+}
 
-  .control {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-  }
+.control {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
 
-  .control:last-of-type {
-    margin-right: 0;
-  }
+.control:last-of-type {
+  margin-right: 0;
+}
 
-  .control:hover {
-    cursor: pointer;
-  }
+.control:hover {
+  cursor: pointer;
+}
 
-  .control.active {
-    color: cornflowerblue;
-    background: ivory;
-    border: 1px solid #c8cacc;
-    border-radius: 6px;
-  }
+.control.active {
+  color: cornflowerblue;
+  background: ivory;
+  border: 1px solid #c8cacc;
+  border-radius: 6px;
+}
+
+.control.disabled {
+  visibility: hidden;
+}
+
+.control.disabled:hover {
+  cursor: default;
+}
 </style>
