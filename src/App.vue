@@ -1,6 +1,14 @@
 <template>
   <div id="app">
-    <my-table :rows="rows">
+    <my-table
+      v-if="dataIsLoaded"
+      :currentPage="currentPage"
+      :rows="rows"
+      :totalPages="totalPages"
+      :tableJson="tableJson"
+
+      @getPage="getPage"
+    >
       <my-table-column prop="id" title="ID">
         <template slot-scope="{ row }">
           <b>{{ row.id }}</b>
@@ -54,32 +62,47 @@ export default {
   },
   data() {
     return {
+      dataIsLoaded: false,
       tableJson: [],
+      sortedRows: [],
       rows: [],
       currentPage: 1,
       paging: "static", // 'infinite', 'virtual'
       pageSize: 10,
-      totalPages: 1,
+      totalPages: 100,
+    };
+  },
+  provide() {
+    return {
+      getPage: this.getPage,
+      infGetPage: this.infGetPage,
     };
   },
   async created() {
-    const res = await fetch(`https://jsonplaceholder.typicode.com/comments`); // ?postId=${number}
+    const res = await fetch(`https://jsonplaceholder.typicode.com/comments`);
     this.tableJson = await res.json();
+
+    this.dataIsLoaded = true;
+
     this.totalPages = Math.floor(this.tableJson.length / this.pageSize);
     this.blockingPromise = this.getPage(this.currentPage);
   },
   methods: {
-    async getPage(number) {
-      this.rows = this.tableJson.filter((row, index) => {
+    /* async */ getPage(number, content = this.sortedRows) {
+      this.sortedRows = content;
+      let rows = content.filter((row, index) => {
         let start = (number - 1) * this.pageSize;
         let end = number * this.pageSize;
         if (index >= start && index < end) return true;
       });
       this.currentPage = number;
+      console.log('rows = ', rows);
+      this.rows = rows;
+      // return rows
     },
-    async infGetPage() {
-      this.blockingPromise && (await this.blockingPromise);
-      this.rows = [...this.rows, ...this.tableJson];
+    /* async */ infGetPage() {
+      this.blockingPromise && (/* await */ this.blockingPromise);
+      this.sortedRows = [...this.sortedRows, ...this.tableJson];
       this.currentPage++;
     },
   },

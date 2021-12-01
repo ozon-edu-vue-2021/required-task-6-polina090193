@@ -42,13 +42,6 @@ export default {
       ];
     }
   },
-  /* methods: {
-    checkFirstPage(){
-        if (this.currentPage === 1) {
-           return <div> Welcome, { this.user.name }</div>;
-        }
-      }
-  }, */
   render() {
     const { $style, shownPagesNumbers, currentPage, totalPages, $listeners } = this;
     const { getPage } = $listeners;

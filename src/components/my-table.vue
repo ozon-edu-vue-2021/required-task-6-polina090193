@@ -6,6 +6,10 @@ import DotsLoaderIcon from "./dots-loader.svg";
 export default {
   name: "my-table",
   props: {
+    tableJson: {
+      type: Array,
+      required: true,
+    },
     rows: {
       type: Array,
       required: true,
@@ -18,13 +22,11 @@ export default {
       type: Number,
       default: 0,
     },
-    staticPaging: {
-      type: Boolean,
-      default: true,
-    },
   },
   data() {
     return {
+      // tableJson: [],
+      // sortedRows: [],
       sortProp: "",
       sortDirection: "",
       filterProp: "",
@@ -32,14 +34,16 @@ export default {
     };
   },
   computed: {
-    sortedRows() {
+    /* sortedRows() {
       let res;
 
+      console.log('this.tableJson = ' + this.tableJson);
+
       if (!this.sortProp) {
-        res = this.rows;
+        res = this.tableJson;
       }
 
-      res = orderBy(this.rows, [this.sortProp], [this.sortDirection]);
+      res = orderBy(this.tableJson, [this.sortProp], [this.sortDirection]);
 
       if (this.filterText) {
         res = res.filter(
@@ -50,10 +54,36 @@ export default {
         );
       }
 
+      console.log('res = ' + res);
+      res = this.getPage(1, res)
+
       return res;
-    },
+    }, */
   },
+  inject: ['getPage', 'infGetPage'],
   methods: {
+    sortRows() {
+      let res;
+
+      if (!this.sortProp) {
+        res = this.tableJson;
+      }
+
+      res = orderBy(this.tableJson, [this.sortProp], [this.sortDirection]);
+
+      if (this.filterText) {
+        res = res.filter(
+          (row) =>
+            row[this.filterProp]
+              .toLowerCase()
+              .search(this.filterText.toLowerCase()) > -1
+        );
+      }
+
+      /* res =  */this.getPage(1, res)
+
+      // this.sortedRows = res;
+    },
     renderColumns(h, row, columnsOptions) {
       return columnsOptions.map((column) => {
         return h("td", { class: "my-table__tbody-td" }, [
@@ -67,6 +97,8 @@ export default {
       this.sortProp = prop;
       this.sortDirection =
         this.sortDirection === "desc" || !this.sortDirection ? "asc" : "desc";
+        this.sortRows()
+        this.$listeners.getPage(1, this.sortedRows);
     },
     openFilterTooltip(prop = "") {
       this.filterProp = prop;
@@ -90,6 +122,10 @@ export default {
 
       return <div {...{ class: this.$style.infPager, style, directives }} />;
     },
+  },
+
+  mounted() {
+    this.sortRows()
   },
 
   render(h) {
@@ -150,7 +186,7 @@ export default {
       ]);
     });
 
-    const rows = this.sortedRows.map((row, index) => {
+    const rows = this.rows.map((row, index) => {
       return h("tr", { key: index }, [
         this.renderColumns(h, row, columnsOptions),
       ]);
