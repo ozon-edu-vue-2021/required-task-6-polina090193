@@ -98,7 +98,6 @@ export default {
       this.currentPage = number;
       console.log('rows = ', rows);
       this.rows = rows;
-      // return rows
     },
     /* async */ infGetPage() {
       this.blockingPromise && (/* await */ this.blockingPromise);

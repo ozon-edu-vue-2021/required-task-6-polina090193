@@ -25,8 +25,6 @@ export default {
   },
   data() {
     return {
-      // tableJson: [],
-      // sortedRows: [],
       sortProp: "",
       sortDirection: "",
       filterProp: "",
@@ -80,9 +78,7 @@ export default {
         );
       }
 
-      /* res =  */this.getPage(1, res)
-
-      // this.sortedRows = res;
+      this.getPage(1, res)
     },
     renderColumns(h, row, columnsOptions) {
       return columnsOptions.map((column) => {
