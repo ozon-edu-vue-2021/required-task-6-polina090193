@@ -34,7 +34,6 @@ export default {
             click: () => {
               this.shownTooltip = true;
               openFilterTooltip();
-              console.log(this.shownTooltip);
             },
           }}
         />
@@ -52,7 +51,6 @@ export default {
             on={{
               click: () => {
                 this.shownTooltip = false;
-                console.log(this.shownTooltip);
               },
             }}
           />

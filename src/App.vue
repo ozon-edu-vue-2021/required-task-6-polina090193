@@ -84,7 +84,6 @@ export default {
 
     this.dataIsLoaded = true;
 
-    this.totalPages = Math.floor(this.tableJson.length / this.pageSize);
     this.blockingPromise = this.getPage(this.currentPage);
   },
   methods: {
@@ -96,8 +95,8 @@ export default {
         if (index >= start && index < end) return true;
       });
       this.currentPage = number;
-      console.log('rows = ', rows);
       this.rows = rows;
+      this.totalPages = Math.ceil(content.length / this.pageSize);
     },
     /* async */ infGetPage() {
       this.blockingPromise && (/* await */ this.blockingPromise);

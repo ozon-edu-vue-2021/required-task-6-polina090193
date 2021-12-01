@@ -31,33 +31,6 @@ export default {
       filterText: "",
     };
   },
-  computed: {
-    /* sortedRows() {
-      let res;
-
-      console.log('this.tableJson = ' + this.tableJson);
-
-      if (!this.sortProp) {
-        res = this.tableJson;
-      }
-
-      res = orderBy(this.tableJson, [this.sortProp], [this.sortDirection]);
-
-      if (this.filterText) {
-        res = res.filter(
-          (row) =>
-            row[this.filterProp]
-              .toLowerCase()
-              .search(this.filterText.toLowerCase()) > -1
-        );
-      }
-
-      console.log('res = ' + res);
-      res = this.getPage(1, res)
-
-      return res;
-    }, */
-  },
   inject: ['getPage', 'infGetPage'],
   methods: {
     sortRows() {
@@ -73,8 +46,8 @@ export default {
         res = res.filter(
           (row) =>
             row[this.filterProp]
-              .toLowerCase()
-              .search(this.filterText.toLowerCase()) > -1
+              .toString().toLowerCase()
+              .search(this.filterText.toString().toLowerCase()) > -1
         );
       }
 
@@ -101,6 +74,7 @@ export default {
     },
     setFilterText(e) {
       this.filterText = e.target.value;
+      this.sortRows()
     },
     renderInfPager() {
       const directives = [
