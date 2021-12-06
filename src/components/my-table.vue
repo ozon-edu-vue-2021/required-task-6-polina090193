@@ -22,6 +22,10 @@ export default {
       type: Number,
       default: 0,
     },
+    infiniteScroll: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -51,7 +55,7 @@ export default {
         );
       }
 
-      this.getPage(1, res)
+      this.infiniteScroll ? this.infGetPage(1, res) : this.getPage(1, res)
     },
     renderColumns(h, row, columnsOptions) {
       return columnsOptions.map((column) => {
@@ -67,10 +71,11 @@ export default {
       this.sortDirection =
         this.sortDirection === "desc" || !this.sortDirection ? "asc" : "desc";
         this.sortRows()
-        this.$listeners.getPage(1, this.sortedRows);
+        this.infiniteScroll ? this.infGetPage(1, this.sortedRows) : this.getPage(1, this.sortedRows);
     },
     openFilterTooltip(prop = "") {
       this.filterProp = prop;
+      this.filterText = '';
     },
     setFilterText(e) {
       this.filterText = e.target.value;
@@ -143,6 +148,7 @@ export default {
           h(FilterDropdown, {
             props: {
               columnProp: column.prop,
+              // shown: column.prop === filterProp,
               filterText: filterText,
             },
             on: {

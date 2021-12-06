@@ -6,6 +6,7 @@
       :rows="rows"
       :totalPages="totalPages"
       :tableJson="tableJson"
+      :infiniteScroll="infiniteScroll"
 
       @getPage="getPage"
     >
@@ -39,8 +40,9 @@
         </template>
       </my-table-column>
     </my-table>
+    <DotsLoaderIcon v-if="infiniteScroll && currentPage < totalPages && loading" v-view.once="infGetPage(currentPage + 1)" />
     <MyTablePaginator
-      v-if="paging === 'static'"
+      v-else-if="!infiniteScroll"
       :totalPages="totalPages"
       :currentPage="currentPage"
       @getPage="getPage"
@@ -52,6 +54,7 @@
 import MyTable from "@/components/my-table";
 import MyTableColumn from "@/components/my-table-column";
 import MyTablePaginator from "@/components/my-table-paginator";
+import DotsLoaderIcon from '@/components/dots-loader.svg';
 
 export default {
   name: "App",
@@ -59,6 +62,7 @@ export default {
     MyTable,
     MyTableColumn,
     MyTablePaginator,
+    DotsLoaderIcon
   },
   data() {
     return {
@@ -67,7 +71,7 @@ export default {
       sortedRows: [],
       rows: [],
       currentPage: 1,
-      paging: "static", // 'infinite', 'virtual'
+      infiniteScroll: true,
       pageSize: 10,
       totalPages: 100,
     };
@@ -84,7 +88,7 @@ export default {
 
     this.dataIsLoaded = true;
 
-    this.blockingPromise = this.getPage(this.currentPage);
+    /* this.infiniteScroll && ( */this.blockingPromise = this.getPage(this.currentPage)/* ) */;
   },
   methods: {
     /* async */ getPage(number, content = this.sortedRows) {
@@ -96,12 +100,20 @@ export default {
       });
       this.currentPage = number;
       this.rows = rows;
-      this.totalPages = Math.ceil(content.length / this.pageSize);
     },
-    /* async */ infGetPage() {
-      this.blockingPromise && (/* await */ this.blockingPromise);
-      this.sortedRows = [...this.sortedRows, ...this.tableJson];
-      this.currentPage++;
+    async infGetPage(number = this.currentPage, content = this.sortedRows) {
+      this.blockingPromise && (await this.blockingPromise);
+      this.sortedRows = content;
+      let end = number * this.pageSize;
+      console.log('number = ', number);
+      let rows = content.filter((row, index) => {
+        if (index >= 1 && index < end) return true;
+      });
+      // console.log(rows);
+      this.currentPage++
+      this.rows = rows;
+      this.totalPages = Math.ceil(content.length / this.pageSize);
+      /* this.sortedRows = [...this.sortedRows, ...this.tableJson]; */
     },
   },
 };

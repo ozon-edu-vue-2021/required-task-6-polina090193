@@ -10,6 +10,10 @@ export default {
       type: String,
       default: "",
     },
+    /* shown: {
+      type: Boolean,
+      default: false,
+    }, */
   },
   data() {
     return {
@@ -25,7 +29,7 @@ export default {
       <v-dropdown
         class={$style.filterIcon}
         triggers={[]}
-        // autoHide={false}
+        autoHide={false}
         shown={this.shownTooltip}
       >
         <font-awesome-icon
