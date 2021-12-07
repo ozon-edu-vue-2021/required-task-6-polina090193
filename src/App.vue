@@ -1,11 +1,14 @@
 <template>
   <div id="app">
+    <button @click="togglePaging">Toggle pagination paging/scroll</button>
     <my-table
       v-if="dataIsLoaded"
       :currentPage="currentPage"
       :rows="rows"
       :totalPages="totalPages"
       :tableJson="tableJson"
+      :infiniteScroll="infiniteScroll"
+      v-view="checkScrollPercent"
 
       @getPage="getPage"
     >
@@ -39,8 +42,9 @@
         </template>
       </my-table-column>
     </my-table>
+    <DotsLoaderIcon v-if="infiniteScroll && loading" />
     <MyTablePaginator
-      v-if="paging === 'static'"
+      v-else-if="!infiniteScroll"
       :totalPages="totalPages"
       :currentPage="currentPage"
       @getPage="getPage"
@@ -52,6 +56,7 @@
 import MyTable from "@/components/my-table";
 import MyTableColumn from "@/components/my-table-column";
 import MyTablePaginator from "@/components/my-table-paginator";
+import DotsLoaderIcon from "@/components/dots-loader.svg";
 
 export default {
   name: "App",
@@ -59,6 +64,7 @@ export default {
     MyTable,
     MyTableColumn,
     MyTablePaginator,
+    DotsLoaderIcon,
   },
   data() {
     return {
@@ -67,9 +73,10 @@ export default {
       sortedRows: [],
       rows: [],
       currentPage: 1,
-      paging: "static", // 'infinite', 'virtual'
+      infiniteScroll: true,
       pageSize: 10,
       totalPages: 100,
+      loading: true,
     };
   },
   provide() {
@@ -84,11 +91,14 @@ export default {
 
     this.dataIsLoaded = true;
 
-    this.totalPages = Math.floor(this.tableJson.length / this.pageSize);
-    this.blockingPromise = this.getPage(this.currentPage);
+    // this.infiniteScroll && (this.blockingPromise = this.infGetPage(this.currentPage));
   },
   methods: {
-    /* async */ getPage(number, content = this.sortedRows) {
+    togglePaging() {
+      this.infiniteScroll = !this.infiniteScroll;
+      this.infGetPage(1);
+    },
+    getPage(number, content = this.sortedRows) {
       this.sortedRows = content;
       let rows = content.filter((row, index) => {
         let start = (number - 1) * this.pageSize;
@@ -96,13 +106,35 @@ export default {
         if (index >= start && index < end) return true;
       });
       this.currentPage = number;
-      console.log('rows = ', rows);
       this.rows = rows;
     },
-    /* async */ infGetPage() {
-      this.blockingPromise && (/* await */ this.blockingPromise);
-      this.sortedRows = [...this.sortedRows, ...this.tableJson];
-      this.currentPage++;
+    async infGetPage(number = this.currentPage, content = this.sortedRows) {
+      (this.loading = true),
+        // this.blockingPromise && (await this.blockingPromise);
+        (this.sortedRows = content);
+      let rows = content.filter((row, index) => {
+        let end = number * this.pageSize;
+        if (index >= 0 && index < end) return true;
+      });
+      this.rows = rows;
+      this.currentPage = number;
+      this.totalPages = Math.ceil(content.length / this.pageSize);
+      this.loading = false;
+
+      this.$nextTick(function() {
+        if (this.$el.clientHeight < window.innerHeight && this.currentPage < this.totalPages) {
+          this.infGetPage(this.currentPage + 1);
+        }
+      })
+    },
+    checkScrollPercent(e) {
+      if (
+        this.infiniteScroll &&
+        this.currentPage < this.totalPages &&
+        (e.scrollPercent === 1 || e.percentInView === 1)
+      ) {
+        this.infGetPage(this.currentPage + 1);
+      }
     },
   },
 };

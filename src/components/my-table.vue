@@ -22,6 +22,10 @@ export default {
       type: Number,
       default: 0,
     },
+    infiniteScroll: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -30,33 +34,6 @@ export default {
       filterProp: "",
       filterText: "",
     };
-  },
-  computed: {
-    /* sortedRows() {
-      let res;
-
-      console.log('this.tableJson = ' + this.tableJson);
-
-      if (!this.sortProp) {
-        res = this.tableJson;
-      }
-
-      res = orderBy(this.tableJson, [this.sortProp], [this.sortDirection]);
-
-      if (this.filterText) {
-        res = res.filter(
-          (row) =>
-            row[this.filterProp]
-              .toLowerCase()
-              .search(this.filterText.toLowerCase()) > -1
-        );
-      }
-
-      console.log('res = ' + res);
-      res = this.getPage(1, res)
-
-      return res;
-    }, */
   },
   inject: ['getPage', 'infGetPage'],
   methods: {
@@ -73,12 +50,12 @@ export default {
         res = res.filter(
           (row) =>
             row[this.filterProp]
-              .toLowerCase()
-              .search(this.filterText.toLowerCase()) > -1
+              .toString().toLowerCase()
+              .search(this.filterText.toString().toLowerCase()) > -1
         );
       }
 
-      this.getPage(1, res)
+      this.infiniteScroll ? this.infGetPage(1, res) : this.getPage(1, res)
     },
     renderColumns(h, row, columnsOptions) {
       return columnsOptions.map((column) => {
@@ -94,13 +71,14 @@ export default {
       this.sortDirection =
         this.sortDirection === "desc" || !this.sortDirection ? "asc" : "desc";
         this.sortRows()
-        this.$listeners.getPage(1, this.sortedRows);
     },
     openFilterTooltip(prop = "") {
       this.filterProp = prop;
+      this.filterText = '';
     },
     setFilterText(e) {
       this.filterText = e.target.value;
+      this.sortRows()
     },
     renderInfPager() {
       const directives = [
@@ -128,7 +106,7 @@ export default {
     const {
       sortProp,
       sortDirection,
-      /* filterProp, */ filterText,
+      filterText,
       setFilterText,
     } = this;
 
@@ -199,6 +177,7 @@ export default {
 .my-table {
   width: 80%;
   margin: auto;
+  margin-top: 10px;
 }
 .my-table__thead-th {
   width: 20%;
