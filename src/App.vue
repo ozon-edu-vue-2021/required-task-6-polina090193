@@ -121,8 +121,6 @@ export default {
       this.totalPages = Math.ceil(content.length / this.pageSize);
       this.loading = false;
 
-      console.log(this.$el.clientHeight);
-      console.log(window.innerHeight);
       this.$nextTick(function() {
         if (this.$el.clientHeight < window.innerHeight && this.currentPage < this.totalPages) {
           this.infGetPage(this.currentPage + 1);
