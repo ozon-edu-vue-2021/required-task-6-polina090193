@@ -40,7 +40,7 @@
         </template>
       </my-table-column>
     </my-table>
-    <DotsLoaderIcon v-if="infiniteScroll && currentPage < totalPages && loading" v-view.once="infGetPage(currentPage + 1)" />
+    <DotsLoaderIcon v-if="infiniteScroll && currentPage < totalPages" v-view.once="infGetPage(currentPage + 1)" />
     <MyTablePaginator
       v-else-if="!infiniteScroll"
       :totalPages="totalPages"
@@ -88,10 +88,10 @@ export default {
 
     this.dataIsLoaded = true;
 
-    /* this.infiniteScroll && ( */this.blockingPromise = this.getPage(this.currentPage)/* ) */;
+    this.infiniteScroll && (this.blockingPromise = this.infGetPage(this.currentPage));
   },
   methods: {
-    /* async */ getPage(number, content = this.sortedRows) {
+    getPage(number, content = this.sortedRows) {
       this.sortedRows = content;
       let rows = content.filter((row, index) => {
         let start = (number - 1) * this.pageSize;
@@ -105,15 +105,12 @@ export default {
       this.blockingPromise && (await this.blockingPromise);
       this.sortedRows = content;
       let end = number * this.pageSize;
-      console.log('number = ', number);
       let rows = content.filter((row, index) => {
         if (index >= 1 && index < end) return true;
       });
-      // console.log(rows);
-      this.currentPage++
       this.rows = rows;
+      this.currentPage = number
       this.totalPages = Math.ceil(content.length / this.pageSize);
-      /* this.sortedRows = [...this.sortedRows, ...this.tableJson]; */
     },
   },
 };
