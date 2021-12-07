@@ -112,8 +112,8 @@ export default {
       this.loading = true,
       this.blockingPromise && (await this.blockingPromise);
       this.sortedRows = content;
-      let end = number * this.pageSize;
       let rows = content.filter((row, index) => {
+        let end = number * this.pageSize;
         if (index >= 0 && index < end) return true;
       });
       this.rows = rows;

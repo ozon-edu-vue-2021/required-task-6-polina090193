@@ -71,7 +71,6 @@ export default {
       this.sortDirection =
         this.sortDirection === "desc" || !this.sortDirection ? "asc" : "desc";
         this.sortRows()
-        this.infiniteScroll ? this.infGetPage(1, this.sortedRows) : this.getPage(1, this.sortedRows);
     },
     openFilterTooltip(prop = "") {
       this.filterProp = prop;
@@ -178,6 +177,7 @@ export default {
 .my-table {
   width: 80%;
   margin: auto;
+  margin-top: 10px;
 }
 .my-table__thead-th {
   width: 20%;
