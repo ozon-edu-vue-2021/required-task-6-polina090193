@@ -10,10 +10,6 @@ export default {
       type: String,
       default: "",
     },
-    /* shown: {
-      type: Boolean,
-      default: false,
-    }, */
   },
   data() {
     return {

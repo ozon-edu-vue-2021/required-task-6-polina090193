@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <button @click="togglePaging">Toggle pagination paging/scroll</button>
     <my-table
       v-if="dataIsLoaded"
       :currentPage="currentPage"
@@ -7,6 +8,7 @@
       :totalPages="totalPages"
       :tableJson="tableJson"
       :infiniteScroll="infiniteScroll"
+      v-view="checkScrollPercent"
 
       @getPage="getPage"
     >
@@ -40,7 +42,7 @@
         </template>
       </my-table-column>
     </my-table>
-    <DotsLoaderIcon v-if="infiniteScroll && currentPage < totalPages" v-view.once="infGetPage(currentPage + 1)" />
+    <DotsLoaderIcon v-if="infiniteScroll && loading"/>
     <MyTablePaginator
       v-else-if="!infiniteScroll"
       :totalPages="totalPages"
@@ -74,6 +76,7 @@ export default {
       infiniteScroll: true,
       pageSize: 10,
       totalPages: 100,
+      loading: true,
     };
   },
   provide() {
@@ -91,6 +94,10 @@ export default {
     this.infiniteScroll && (this.blockingPromise = this.infGetPage(this.currentPage));
   },
   methods: {
+    togglePaging() {
+      this.infiniteScroll = !this.infiniteScroll;
+      this.infGetPage(1)
+    },
     getPage(number, content = this.sortedRows) {
       this.sortedRows = content;
       let rows = content.filter((row, index) => {
@@ -102,16 +109,21 @@ export default {
       this.rows = rows;
     },
     async infGetPage(number = this.currentPage, content = this.sortedRows) {
+      this.loading = true,
       this.blockingPromise && (await this.blockingPromise);
       this.sortedRows = content;
       let end = number * this.pageSize;
       let rows = content.filter((row, index) => {
-        if (index >= 1 && index < end) return true;
+        if (index >= 0 && index < end) return true;
       });
       this.rows = rows;
       this.currentPage = number
       this.totalPages = Math.ceil(content.length / this.pageSize);
+      this.loading = false;
     },
+    checkScrollPercent(e) {
+      if (this.infiniteScroll && e.scrollPercent === 1) this.infGetPage(this.currentPage + 1)
+    }
   },
 };
 </script>

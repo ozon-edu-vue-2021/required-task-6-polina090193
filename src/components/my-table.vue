@@ -107,7 +107,7 @@ export default {
     const {
       sortProp,
       sortDirection,
-      /* filterProp, */ filterText,
+      filterText,
       setFilterText,
     } = this;
 
@@ -148,7 +148,6 @@ export default {
           h(FilterDropdown, {
             props: {
               columnProp: column.prop,
-              // shown: column.prop === filterProp,
               filterText: filterText,
             },
             on: {
