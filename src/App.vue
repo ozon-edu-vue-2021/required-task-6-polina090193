@@ -42,7 +42,7 @@
         </template>
       </my-table-column>
     </my-table>
-    <DotsLoaderIcon v-if="infiniteScroll && loading"/>
+    <DotsLoaderIcon v-if="infiniteScroll && loading" />
     <MyTablePaginator
       v-else-if="!infiniteScroll"
       :totalPages="totalPages"
@@ -56,7 +56,7 @@
 import MyTable from "@/components/my-table";
 import MyTableColumn from "@/components/my-table-column";
 import MyTablePaginator from "@/components/my-table-paginator";
-import DotsLoaderIcon from '@/components/dots-loader.svg';
+import DotsLoaderIcon from "@/components/dots-loader.svg";
 
 export default {
   name: "App",
@@ -64,7 +64,7 @@ export default {
     MyTable,
     MyTableColumn,
     MyTablePaginator,
-    DotsLoaderIcon
+    DotsLoaderIcon,
   },
   data() {
     return {
@@ -91,12 +91,12 @@ export default {
 
     this.dataIsLoaded = true;
 
-    this.infiniteScroll && (this.blockingPromise = this.infGetPage(this.currentPage));
+    // this.infiniteScroll && (this.blockingPromise = this.infGetPage(this.currentPage));
   },
   methods: {
     togglePaging() {
       this.infiniteScroll = !this.infiniteScroll;
-      this.infGetPage(1)
+      this.infGetPage(1);
     },
     getPage(number, content = this.sortedRows) {
       this.sortedRows = content;
@@ -109,21 +109,35 @@ export default {
       this.rows = rows;
     },
     async infGetPage(number = this.currentPage, content = this.sortedRows) {
-      this.loading = true,
-      this.blockingPromise && (await this.blockingPromise);
-      this.sortedRows = content;
+      (this.loading = true),
+        // this.blockingPromise && (await this.blockingPromise);
+        (this.sortedRows = content);
       let rows = content.filter((row, index) => {
         let end = number * this.pageSize;
         if (index >= 0 && index < end) return true;
       });
       this.rows = rows;
-      this.currentPage = number
+      this.currentPage = number;
       this.totalPages = Math.ceil(content.length / this.pageSize);
       this.loading = false;
+
+      console.log(this.$el.clientHeight);
+      console.log(window.innerHeight);
+      this.$nextTick(function() {
+        if (this.$el.clientHeight < window.innerHeight && this.currentPage < this.totalPages) {
+          this.infGetPage(this.currentPage + 1);
+        }
+      })
     },
     checkScrollPercent(e) {
-      if (this.infiniteScroll && e.scrollPercent === 1) this.infGetPage(this.currentPage + 1)
-    }
+      if (
+        this.infiniteScroll &&
+        this.currentPage < this.totalPages &&
+        (e.scrollPercent === 1 || e.percentInView === 1)
+      ) {
+        this.infGetPage(this.currentPage + 1);
+      }
+    },
   },
 };
 </script>
